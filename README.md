@@ -1,121 +1,142 @@
 # Tunisia Weather Pipeline — End-to-End Data Engineering Project
 
-## Overview
+## 1. Project Description and Use Case
+
 This project implements an end-to-end data engineering pipeline for monitoring weather conditions across selected Tunisian cities.
 
-It demonstrates the full data lifecycle:
-- **Ingestion** from 2 distinct sources
-- **Storage** of raw and transformed data
-- **Transformation** and enrichment
-- **Automated orchestration**
-- **Restitution through an interactive dashboard**
+The goal is to demonstrate the full data lifecycle:
+- Data ingestion from multiple sources  
+- Data storage (raw and structured)  
+- Data transformation and enrichment  
+- Automated pipeline execution  
+- Data visualization through a dashboard  
 
-## Data Sources
-1. **Open-Meteo API**: current weather + daily forecast
-2. **Local CSV metadata file**: Tunisian cities, regions, latitude, longitude
+Use case: provide near real-time weather insights and forecasts for different regions in Tunisia.
 
-## Project Requirements Covered
-- **2 sources distinctes**: API + CSV
-- **Ingestion planifiée**: scheduled pipeline with APScheduler
-- **Ingestion temps réel / quasi temps réel**: current weather fetched every 5 minutes
-- **Architecture data**: raw JSON + SQLite analytical store
-- **3+ transformations métier**:
-  1. timestamp normalization
-  2. temperature aggregation and derived metrics
-  3. comfort/severity classification
-  4. enrichment with regional metadata
-- **Orchestration**: automated batch + stream-like jobs
-- **Visualisation**: Streamlit dashboard
-- **Qualité**: structured logging, retry logic, 5 tests
-- **Déploiement**: Docker + docker-compose
+---
 
-## Architecture
-See `docs/architecture.mmd`.
+## 2. Architecture Diagram
 
-## Folder Structure
-```text
-weather_pipeline_project_full/
-├── app.py
-├── run_pipeline.py
-├── scheduler.py
-├── requirements.txt
-├── Dockerfile
-├── docker-compose.yml
-├── data/
-│   ├── cities.csv
-│   └── raw/
-├── docs/
-│   ├── architecture.mmd
-│   ├── report_template.md
-│   └── demo_script.md
-├── src/
-│   ├── config.py
-│   ├── ingestion.py
-│   ├── logging_config.py
-│   ├── pipeline.py
-│   ├── storage.py
-│   └── transformation.py
-└── tests/
-    └── test_transformation.py
-```
-## Technology justification
+See the architecture diagram in:
 
-SQLite was selected because the project is a local prototype with a small data volume. It avoids the overhead of configuring a PostgreSQL server while still providing structured SQL storage for the dashboard.
+docs/architecture.mmd
 
-APScheduler was selected instead of Airflow because the pipeline has a limited number of tasks and does not require a heavy orchestration platform. It is enough to automate batch ingestion and near real-time polling.
+This diagram illustrates the flow from data ingestion to storage, transformation, and visualization.
 
-Streamlit was selected because it allows fast development of an interactive data dashboard directly in Python, which is suitable for data engineering prototypes.
+Pipeline flow:
+1. Data ingestion from API and CSV  
+2. Raw data stored as JSON files  
+3. Data transformation using Pandas  
+4. Processed data stored in SQLite  
+5. Dashboard reads processed data  
 
-Docker was used to make the project reproducible and easy to run on another machine.
+---
 
-## Future improvements
+## 3. Data Sources Used
 
-In a production version, Kafka could be added to replace scheduled polling with true event-driven streaming. PostgreSQL or a cloud data warehouse could replace SQLite for better scalability. The dashboard could also be deployed publicly on Render, Railway, or a cloud VM.
+1. Open-Meteo API  
+Provides current weather and forecast data  
 
-## Quick Start (Local)
-### 1) Install dependencies
-```bash
+2. Local CSV file (data/cities.csv)  
+Contains Tunisian cities metadata (region, latitude, longitude)  
+
+---
+
+## 4. Technology Stack and Justifications
+
+- Python: rapid development and strong ecosystem  
+- Requests: API data ingestion  
+- Pandas: data transformation and aggregation  
+- SQLite: lightweight structured storage  
+- APScheduler: pipeline scheduling  
+- Streamlit: interactive dashboard  
+- Docker: reproducible deployment  
+- Pytest: automated tests  
+
+### Justification
+
+SQLite was selected because the project is a local prototype with limited data volume. It avoids the overhead of configuring a full database server while still providing SQL capabilities.
+
+APScheduler was chosen instead of Airflow because the pipeline is simple and does not require a heavy orchestration tool.
+
+Streamlit allows fast development of a dashboard without frontend complexity.
+
+Docker ensures the project runs consistently across different environments.
+
+---
+
+## 5. Installation Instructions
+
+### Local Setup
+
+Install dependencies:
 pip install -r requirements.txt
-```
 
-### 2) Run the initial pipeline
-```bash
+Run pipeline:
 python run_pipeline.py
-```
 
-### 3) Start the dashboard
-```bash
+Run dashboard:
 streamlit run app.py
-```
 
-### 4) Optional: start scheduler
-```bash
-python scheduler.py
-```
+---
 
-## Docker Run
-```bash
+### Docker Setup
+
 docker compose up --build
-```
-Then open:
-```text
+
+Open:
 http://localhost:8501
-```
 
-## Tests
-```bash
+---
+
+## 6. Deployment / Access
+
+Dashboard URL:
+http://localhost:8501
+
+No credentials or API keys are required to run the project locally.
+
+---
+
+## 7. Dashboard Usage
+
+The dashboard provides:
+- Current weather per city  
+- Temperature trends  
+- Forecast data  
+- Regional summaries  
+- Alert monitoring  
+
+Data is updated automatically using scheduled ingestion.
+
+---
+
+## 8. Tests
+
+Run tests with:
 pytest -q
-```
 
-## Technology Stack and Justification
-- **Python**: rapid development, strong ecosystem for data workflows
-- **Requests**: reliable HTTP client for API ingestion
-- **Pandas**: fast transformation and aggregation of tabular data
-- **SQLite**: lightweight analytical store for local deployment
-- **APScheduler**: simple orchestration and scheduling
-- **Streamlit**: quick public-facing dashboard for data restitution
-- **Docker**: reproducible local deployment
-- **Pytest**: automated quality checks
+The project includes at least 5 tests covering transformation logic.
 
-## Suggested Presentation Summary
-This project collects weather data from a public API and a local metadata file, stores raw and cleaned data, applies business transformations, automates updates, and exposes insights through an interactive dashboard.
+---
+
+## 9. Limitations and Future Improvements
+
+### Limitations
+- No true streaming system (Kafka)  
+- Local deployment only  
+- SQLite not scalable for large datasets  
+
+### Future Improvements
+- Add Kafka for real-time streaming  
+- Replace SQLite with PostgreSQL or cloud warehouse  
+- Deploy dashboard publicly  
+
+Note:
+The project uses near real-time ingestion (every 5 minutes) through scheduled polling to simulate streaming.
+
+---
+
+## 10. Summary
+
+This project demonstrates a complete data engineering pipeline from ingestion to visualization using a simple and effective architecture suitable for prototyping.
