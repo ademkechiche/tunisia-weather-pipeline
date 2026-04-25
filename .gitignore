@@ -2,4 +2,9 @@ __pycache__/
 .pytest_cache/
 *.pyc
 .venv/
+
+# Database
 weather_pipeline.db
+
+# Raw data (VERY IMPORTANT)
+data/raw/
