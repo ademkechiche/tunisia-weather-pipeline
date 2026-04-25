@@ -1,0 +1,54 @@
+{
+  "latitude": 36.8125,
+  "longitude": 10.1875,
+  "generationtime_ms": 0.09560585021972656,
+  "utc_offset_seconds": 3600,
+  "timezone": "Africa/Tunis",
+  "timezone_abbreviation": "GMT+1",
+  "elevation": 11.0,
+  "current_units": {
+    "time": "iso8601",
+    "interval": "seconds",
+    "temperature_2m": "°C",
+    "relative_humidity_2m": "%",
+    "wind_speed_10m": "km/h",
+    "weather_code": "wmo code"
+  },
+  "current": {
+    "time": "2026-04-25T21:30",
+    "interval": 900,
+    "temperature_2m": 16.1,
+    "relative_humidity_2m": 80,
+    "wind_speed_10m": 3.8,
+    "weather_code": 1
+  },
+  "daily_units": {
+    "time": "iso8601",
+    "temperature_2m_max": "°C",
+    "temperature_2m_min": "°C",
+    "precipitation_sum": "mm"
+  },
+  "daily": {
+    "time": [
+      "2026-04-25",
+      "2026-04-26",
+      "2026-04-27"
+    ],
+    "temperature_2m_max": [
+      21.4,
+      24.2,
+      24.3
+    ],
+    "temperature_2m_min": [
+      11.5,
+      13.9,
+      15.9
+    ],
+    "precipitation_sum": [
+      0.0,
+      0.0,
+      0.3
+    ]
+  },
+  "city": "Tunis"
+}
