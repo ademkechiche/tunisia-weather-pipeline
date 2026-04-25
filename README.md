@@ -17,9 +17,7 @@ Use case: provide near real-time weather insights and forecasts for different re
 
 ## 2. Architecture Diagram
 
-See the architecture diagram in:
-
-docs/architecture.mmd
+See the architecture diagram in: [`docs/architecture.mmd`](docs/architecture.mmd)
 
 This diagram illustrates the flow from data ingestion to storage, transformation, and visualization.
 
