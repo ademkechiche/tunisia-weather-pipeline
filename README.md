@@ -1,5 +1,9 @@
 # Tunisia Weather Pipeline — End-to-End Data Engineering Project
 
+![Python](https://img.shields.io/badge/Python-3.11-blue)
+![Docker](https://img.shields.io/badge/Docker-ready-informational)
+![License](https://img.shields.io/badge/License-MIT-green)
+
 ## 1. Project Description and Use Case
 
 This project implements an end-to-end data engineering pipeline for monitoring weather conditions across selected Tunisian cities.
