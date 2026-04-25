@@ -1,50 +1,170 @@
-# Rapport Technique — Tunisia Weather Pipeline
+# Technical Report — Tunisia Weather Monitoring Pipeline
 
-## 1. Contexte et objectif
-L'objectif de ce projet est de concevoir un pipeline Data Engineering end-to-end permettant de collecter, transformer, stocker et restituer des données météorologiques concernant plusieurs villes tunisiennes.
+---
 
-## 2. Sources de données
-- Source 1 : API Open-Meteo pour la météo actuelle et les prévisions
-- Source 2 : fichier CSV local contenant les métadonnées des villes (nom, région, latitude, longitude)
+## Table of Contents
 
-## 3. Architecture choisie
-L'architecture retenue est simple et adaptée à un déploiement local :
-- stockage brut en fichiers JSON
-- stockage analytique en SQLite
-- transformations avec Pandas
-- orchestration avec APScheduler
-- visualisation avec Streamlit
+1. [Context and Data Sources](#1-context-and-data-sources)
+2. [Data Architecture and Technology Stack](#2-data-architecture-and-technology-stack)
+3. [Annotated Pipeline Schema](#3-annotated-pipeline-schema)
+4. [Main Transformations Performed](#4-main-transformations-performed)
+5. [Difficulties Encountered and Solutions](#5-difficulties-encountered-and-solutions)
+6. [Limitations and Future Improvements](#6-limitations-and-future-improvements)
 
-## 4. Transformations principales
-1. Normalisation des timestamps
-2. Calcul de la température moyenne journalière
-3. Classification du niveau de confort thermique
-4. Génération d'un niveau d'alerte météo
-5. Enrichissement avec la région administrative
+---
 
-## 5. Orchestration
-Deux types d'exécution sont utilisés :
-- exécution planifiée de type batch
-- exécution fréquente simulant un flux quasi temps réel
+## 1. Context and Data Sources
 
-## 6. Qualité et robustesse
-- logs structurés au format JSON
-- retry sur la récupération API
-- 5 tests unitaires
-- Docker pour la reproductibilité
+This project implements an end-to-end data engineering pipeline for monitoring weather conditions across multiple Tunisian cities.
 
-## 7. Difficultés rencontrées
-- gestion des appels API et des erreurs réseau
-- choix d'une architecture simple mais cohérente avec les contraintes de temps
-- conception d'un tableau de bord clair et exploitable
+The objective is to collect, process, and visualize weather data in order to provide useful insights such as temperature trends, forecasts, and alert conditions.
 
-## 8. Limites
-- streaming simulé et non basé sur Kafka
-- déploiement local au lieu d'une infrastructure cloud
-- historique limité aux exécutions du pipeline
+Two data sources are used:
 
-## 9. Perspectives d'amélioration
-- ajout de Kafka pour un vrai streaming
-- déploiement cloud public
-- historisation avancée des snapshots
-- alertes automatiques par email ou webhook
+| Source | Type | Description |
+|--------|------|-------------|
+| [Open-Meteo API](https://open-meteo.com/) | REST API | Real-time and forecast weather data — temperature, wind, precipitation, weather codes |
+| `data/cities.csv` | Local file | Tunisian cities metadata — names, regions, and geographic coordinates |
+
+The combination of these two sources allows the system to enrich raw weather data with contextual geographic information.
+
+---
+
+## 2. Data Architecture and Technology Stack
+
+### Architecture Overview
+
+A lightweight architecture was chosen to prioritize clarity and ease of deployment:
+
+| Layer | Implementation |
+|-------|---------------|
+| Raw Layer | JSON files stored locally |
+| Processed Layer | SQLite database |
+| Serving Layer | Streamlit dashboard |
+
+This structure enforces a clean separation between raw and processed data while keeping the system simple and reproducible.
+
+### Technology Stack
+
+| Tool | Purpose |
+|------|---------|
+| Python 3.11 | Core pipeline language |
+| Requests | API data ingestion |
+| Pandas | Data transformation and aggregation |
+| SQLite | Structured storage for processed data |
+| APScheduler | Automated pipeline scheduling |
+| Streamlit | Interactive dashboard |
+| Docker | Reproducibility and portability |
+| Pytest | Automated testing |
+
+### Design Decisions
+
+**SQLite** was selected because the project is a local prototype with a limited data volume. It provides structured SQL storage without the overhead of running a database server.
+
+**APScheduler** was used instead of heavier orchestration tools such as Airflow because the pipeline has a small number of tasks and does not require complex dependency management.
+
+**Streamlit** enables fast creation of interactive dashboards directly in Python, with no frontend development required.
+
+**Docker** ensures the application runs consistently across different environments.
+
+---
+
+## 3. Annotated Pipeline Schema
+
+```
+┌─────────────────────┐     ┌─────────────────────┐
+│   Open-Meteo API    │     │   data/cities.csv    │
+└────────┬────────────┘     └──────────┬──────────┘
+         │                             │
+         └──────────┬──────────────────┘
+                    ▼
+         ┌─────────────────────┐
+         │  Ingestion Phase    │  Fetch weather data per city
+         └────────┬────────────┘
+                  ▼
+         ┌─────────────────────┐
+         │  Raw Storage Phase  │  Save API responses as JSON files
+         └────────┬────────────┘
+                  ▼
+         ┌─────────────────────┐
+         │ Transformation Phase│  Clean and enrich data with Pandas
+         └────────┬────────────┘
+                  ▼
+         ┌─────────────────────┐
+         │  Processed Storage  │  Store structured records in SQLite
+         └────────┬────────────┘
+                  ▼
+         ┌─────────────────────┐
+         │ Streamlit Dashboard │  Read from SQLite and visualize
+         └─────────────────────┘
+```
+
+The pipeline runs automatically on a 5-minute schedule via APScheduler.
+
+**Ingestion Phase** — Weather data is fetched from the Open-Meteo API for each city defined in the CSV file.
+
+**Raw Storage Phase** — API responses are saved as JSON files, enabling traceability and the ability to reprocess data without re-fetching.
+
+**Transformation Phase** — Data is cleaned, normalized, and enriched using Pandas. Derived fields are computed at this stage.
+
+**Processed Storage Phase** — Transformed records are written to structured SQLite tables.
+
+**Visualization Phase** — The Streamlit dashboard reads from SQLite and renders tables, charts, and alerts.
+
+---
+
+## 4. Main Transformations Performed
+
+### Data Cleaning and Normalization
+
+- Standardization of timestamps to a consistent format
+- Formatting and rounding of numerical weather values
+
+### Aggregation and Derived Metrics
+
+- Calculation of average temperature per city and region
+- Extraction of daily minimum and maximum temperatures
+
+### Data Enrichment
+
+- Merging raw weather data with city metadata from `cities.csv`
+- Adding region information to each weather record
+
+### Classification
+
+- Assignment of comfort levels: `cold`, `comfortable`, `hot`
+- Detection of alert conditions based on wind speed thresholds or severe weather codes
+
+---
+
+## 5. Difficulties Encountered and Solutions
+
+| Difficulty | Solution |
+|------------|----------|
+| Handling multiple data sources with different schemas | Defined a unified internal schema to merge API data with CSV metadata |
+| Ensuring reliable API calls | Implemented retry logic to handle transient failures gracefully |
+| Designing a simple orchestration system | Used APScheduler instead of heavier tools — sufficient for the pipeline's complexity |
+| Balancing simplicity and completeness | Selected lightweight tools that still cover all pipeline stages end-to-end |
+
+---
+
+## 6. Limitations and Future Improvements
+
+### Current Limitations
+
+| Limitation | Detail |
+|------------|--------|
+| No true real-time streaming | The pipeline uses scheduled polling every 5 minutes — not event-driven |
+| Local deployment only | The dashboard is not publicly accessible |
+| SQLite scalability | Not suitable for high-volume or concurrent production workloads |
+
+### Future Improvements
+
+- **Kafka** — replace polling with real-time event-driven ingestion
+- **PostgreSQL or cloud data warehouse** — replace SQLite for scalability (e.g. BigQuery, Redshift)
+- **Public deployment** — host the dashboard on Render, Railway, or a cloud VM
+- **Historical analysis and anomaly detection** — extend the dashboard with trend analysis
+
+### Note on Real-Time Processing
+
+The project implements near real-time ingestion by fetching data every 5 minutes using scheduled tasks. This approach simulates streaming behavior in a simple and deployment-friendly way suitable for a prototype context.
