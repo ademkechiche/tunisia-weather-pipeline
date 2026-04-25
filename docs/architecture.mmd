@@ -1,0 +1,9 @@
+flowchart TD
+    A[Open-Meteo API] --> B[Ingestion Layer\nrequests + retry]
+    C[CSV Metadata\ncity, region, coordinates] --> B
+    B --> D[Raw Storage\nJSON files in data/raw]
+    B --> E[Transformation Layer\npandas]
+    E --> F[(SQLite)]
+    F --> G[Streamlit Dashboard]
+    H[APScheduler] --> B
+    H --> E
