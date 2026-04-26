@@ -133,6 +133,44 @@ hr {
     font-size: 0.85rem;
     opacity: 0.82;
 }
+
+.pro-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: white;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.10);
+    font-size: 0.95rem;
+}
+
+.pro-table thead th {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: white;
+    padding: 16px 18px;
+    text-align: left;
+    font-weight: 700;
+}
+
+.pro-table tbody td {
+    padding: 15px 18px;
+    border-bottom: 1px solid #e5e7eb;
+    color: #1f2937;
+}
+
+.pro-table tbody tr:nth-child(even) {
+    background: #f8fafc;
+}
+
+.pro-table tbody tr:hover {
+    background: #eef6ff;
+}
+
+.pro-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -209,6 +247,10 @@ st.caption(
     "publish new observations every 10–15 minutes."
 )
 
+def render_table(df):
+    html = df.to_html(index=False, classes="pro-table", border=0)
+    st.markdown(html, unsafe_allow_html=True)
+
 st.subheader(f"Current conditions — {selected_city}")
 st.dataframe(
     selected_city_df[
@@ -245,11 +287,11 @@ with right:
         st.info("No precipitation forecast available for this city.")
 
 st.subheader("Regional summary")
-st.dataframe(region_df, use_container_width=True)
+render_table(region_df)
 
 st.subheader("Latest snapshot across cities")
-st.dataframe(
-    latest_df[
+render_table(
+    selected_city_df[
         [
             "city",
             "region",
@@ -258,8 +300,7 @@ st.dataframe(
             "wind_speed_kmh",
             "comfort_level",
         ]
-    ].sort_values("temperature_c", ascending=False),
-    use_container_width=True,
+    ]
 )
 
 alert_df = daily_df[
