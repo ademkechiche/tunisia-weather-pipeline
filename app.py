@@ -7,14 +7,94 @@ from src.config import DB_PATH
 from src.storage import read_table
 
 st.set_page_config(page_title="Tunisia Weather Pipeline", layout="wide")
+st.markdown("""
+<style>
+.stApp {
+    background: linear-gradient(135deg, #f8fbff 0%, #eef5ff 100%);
+}
+
+.block-container {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+    max-width: 1250px;
+}
+
+h1 {
+    font-size: 3rem !important;
+    font-weight: 800 !important;
+    color: #1f2937;
+}
+
+h2, h3 {
+    color: #1f2937;
+    font-weight: 700 !important;
+}
+
+[data-testid="stMetric"] {
+    background: white;
+    padding: 22px;
+    border-radius: 18px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+[data-testid="stMetricLabel"] {
+    color: #64748b;
+    font-weight: 600;
+}
+
+[data-testid="stMetricValue"] {
+    color: #0f172a;
+    font-size: 2rem;
+}
+
+[data-testid="stDataFrame"] {
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.stAlert {
+    border-radius: 16px;
+}
+
+section[data-testid="stSidebar"] {
+    background: #eef4fb;
+    border-right: 1px solid #dbeafe;
+}
+
+hr {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+.card {
+    background: white;
+    padding: 22px;
+    border-radius: 18px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    margin-bottom: 18px;
+}
+
+.small-muted {
+    color: #64748b;
+    font-size: 0.95rem;
+}
+</style>
+""", unsafe_allow_html=True)
+
 
 refresh_count = st_autorefresh(interval=10000, key="dashboard_autorefresh")
 
-st.title("Tunisia Weather Monitoring Dashboard")
-st.caption(
-    "End-to-end data engineering project: ingestion, storage, transformation, "
-    "orchestration, and visualization."
-)
+st.markdown("""
+# Tunisia Weather Monitoring Dashboard
+<div class="small-muted">
+End-to-end data engineering project: ingestion, storage, transformation, orchestration, and visualization.
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("---")
 
 if not DB_PATH.exists():
     st.warning("Database not found yet. Run `python run_pipeline.py` first.")
