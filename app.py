@@ -81,6 +81,58 @@ hr {
     color: #64748b;
     font-size: 0.95rem;
 }
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 22px;
+    margin: 34px 0 28px 0;
+}
+
+.kpi-card {
+    padding: 26px;
+    border-radius: 24px;
+    color: white;
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.16);
+    min-height: 145px;
+}
+
+.kpi-card.blue {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+}
+
+.kpi-card.cyan {
+    background: linear-gradient(135deg, #0891b2, #0e7490);
+}
+
+.kpi-card.orange {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+}
+
+.kpi-card.dark {
+    background: linear-gradient(135deg, #0f172a, #334155);
+}
+
+.kpi-label {
+    font-size: 0.95rem;
+    opacity: 0.88;
+    margin-bottom: 14px;
+}
+
+.kpi-value {
+    font-size: 2.4rem;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.kpi-value.small {
+    font-size: 1.7rem;
+}
+
+.kpi-sub {
+    margin-top: 14px;
+    font-size: 0.85rem;
+    opacity: 0.82;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -124,16 +176,34 @@ st.sidebar.caption(f"Latest API weather time: {latest_ts}")
 selected_city_df = latest_df[latest_df["city"] == selected_city]
 selected_forecast = daily_df[daily_df["city"] == selected_city].copy()
 
-col1, col2, col3, col4 = st.columns(4)
+avg_temp = round(latest_df["temperature_c"].mean(), 2)
+hottest_city = latest_df.sort_values("temperature_c", ascending=False).iloc[0]["city"]
+latest_time_short = str(latest_ts)[:16]
 
-col1.metric("Cities monitored", len(cities))
-col2.metric("Latest average temp (°C)", round(latest_df["temperature_c"].mean(), 2))
-col3.metric(
-    "Hottest city now",
-    latest_df.sort_values("temperature_c", ascending=False).iloc[0]["city"],
-)
-col4.metric("Latest API weather time", str(latest_ts))
-
+st.markdown(f"""
+<div class="kpi-grid">
+    <div class="kpi-card blue">
+        <div class="kpi-label">Cities monitored</div>
+        <div class="kpi-value">{len(cities)}</div>
+        <div class="kpi-sub">Active Tunisian locations</div>
+    </div>
+    <div class="kpi-card cyan">
+        <div class="kpi-label">Average temperature</div>
+        <div class="kpi-value">{avg_temp}°C</div>
+        <div class="kpi-sub">Latest city snapshot</div>
+    </div>
+    <div class="kpi-card orange">
+        <div class="kpi-label">Hottest city now</div>
+        <div class="kpi-value">{hottest_city}</div>
+        <div class="kpi-sub">Highest current temperature</div>
+    </div>
+    <div class="kpi-card dark">
+        <div class="kpi-label">Latest API update</div>
+        <div class="kpi-value small">{latest_time_short}</div>
+        <div class="kpi-sub">Observation timestamp</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 st.caption(
     "Note: the dashboard refreshes frequently, but the external weather API may only "
     "publish new observations every 10–15 minutes."
