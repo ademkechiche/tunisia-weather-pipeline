@@ -1,8 +1,14 @@
 services:
-  weather_dashboard:
+  dashboard:
     build: .
-    container_name: weather_dashboard
+    command: streamlit run app.py --server.address=0.0.0.0 --server.port=8501
     ports:
       - "8501:8501"
     volumes:
-      - ./:/app
+      - .:/app
+
+  scheduler:
+    build: .
+    command: python scheduler.py
+    volumes:
+      - .:/app

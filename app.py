@@ -34,7 +34,7 @@ if "timestamp" not in current_df.columns:
 
 latest_ts = pd.to_datetime(current_df["timestamp"]).max()
 latest_df = current_df[pd.to_datetime(current_df["timestamp"]) == latest_ts].copy()
-
+latest_df = latest_df.drop_duplicates(subset=["city"], keep="last")
 cities = sorted(latest_df["city"].unique())
 selected_city = st.sidebar.selectbox("Select a city", cities)
 
